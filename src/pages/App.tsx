@@ -1,69 +1,31 @@
-import { useEffect, useState } from 'react';
-import './App.css';
-import { Character } from '../interfaces/character';
-import { Info } from '../interfaces/pagination';
-import { getCharacters } from '../services/character';
-import CharacterComponent from './CharacterComponent';
-import { Pager } from './Pager';
+import { Pager } from '../components/Pager';
+import { useGetCharacters } from '../hooks/useGetCharacters';
+import { CharacterList } from '../components/CharacterList';
+import { SearchInput } from '../components/SearchInput';
+import { MainContainer } from '../components/MainContainer';
 
-const initialCharacters: Character[] = []
 
 function App() {
-  const [characters, setCharacters] = useState<Character[]>(initialCharacters)
-  const [info, setInfo] = useState<Info | undefined>()
-  const [currentPage, setCurrentPage] = useState<number>(1)
-  const [searchQuery, setSearchQuery] = useState<string>("");
-
-  const fetchCharacters = async (page: number, searchQuery: string) => {
-    getCharacters(page, searchQuery)
-      .then((characterResponse) => {
-        setCharacters(characterResponse.data.results as Character[])
-        setInfo(characterResponse.data.info)
-      })
-  };
-
-  const handleNext = () => {
-    if (info?.next) {
-      setCurrentPage((prevPage) => prevPage + 1);
-    }
-  };
-
-  const handlePrev = () => {
-    if (info?.prev) {
-      setCurrentPage((prevPage) => prevPage - 1);
-    }
-  };
-
-  const handleSearch = (value: string) => {
-    setCurrentPage(1)
-    fetchCharacters(1, value)
-    setSearchQuery(value)
-  };
-
-  useEffect(() => {
-    fetchCharacters(currentPage, searchQuery);
-  }, [currentPage]);
+  const { currentPage, pages, handlePrev, handleNext, errorMessage, characters, handleSearch, isPending } = useGetCharacters()
 
   return (
-    <div className="App">
-      <input onChange={(e) => handleSearch(e.target.value)} placeholder='filter by name'></input>
-      <Pager
+    <MainContainer>
+      <SearchInput onChange={handleSearch} />
+      {isPending && <>Loading...</>}
+      {!errorMessage && !isPending && <Pager
         currentPage={currentPage}
-        numberOfPages={info?.pages}
+        numberOfPages={pages}
         onPrev={handlePrev}
         onNext={handleNext}
-      />
-      {
-        characters.map((character: Character) => (
-          <CharacterComponent
-            id={character.id}
-            image={character.image}
-            name={character.name}
-            species={character.species}
-          />
-        ))
-      }
-    </div>
+      />}
+      {errorMessage ? <>{errorMessage}</> : <CharacterList characters={characters} />}
+      {!errorMessage && !isPending && <Pager
+        currentPage={currentPage}
+        numberOfPages={pages}
+        onPrev={handlePrev}
+        onNext={handleNext}
+      />}
+    </MainContainer>
   );
 }
 
