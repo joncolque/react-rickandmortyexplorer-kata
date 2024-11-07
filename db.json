@@ -1,49 +1,5 @@
 {
   "character": [
-    {
-      "id": "1",
-      "image": "https://rickandmortyapi.com/api/character/avatar/1.jpeg",
-      "name": "Rick Sancoooooo",
-      "species": "Human",
-      "status": "Alive",
-      "location": "Citadel of Ricks",
-      "episode": 51
-    },
-    {
-      "id": "2",
-      "image": "https://rickandmortyapi.com/api/character/avatar/2.jpeg",
-      "name": "Morty Smithetsasdfsadf",
-      "species": "Human",
-      "status": "Alive",
-      "location": "Citadel of Ricks",
-      "episode": 51
-    },
-    {
-      "id": "5",
-      "image": "https://rickandmortyapi.com/api/character/avatar/5.jpeg",
-      "name": "Jerry Smith",
-      "species": "Human",
-      "status": "Alive",
-      "location": "Earth (Replacement Dimension)",
-      "episode": 39
-    },
-    {
-      "id": "19",
-      "image": "https://rickandmortyapi.com/api/character/avatar/19.jpeg",
-      "name": "Antenna Rick",
-      "species": "Human",
-      "status": "unknown",
-      "location": "unknown",
-      "episode": 1
-    },
-    {
-      "id": "15",
-      "image": "https://rickandmortyapi.com/api/character/avatar/15.jpeg",
-      "name": "Alien Rick",
-      "species": "Alien",
-      "status": "unknown",
-      "location": "Citadel of Ricks",
-      "episode": 1
-    }
+   
   ]
 }

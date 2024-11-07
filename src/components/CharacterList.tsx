@@ -6,9 +6,10 @@ interface CharacterListProps {
   characters: Character[]
   onClickViewDetail: (id: number) => void
   onClickEdit: (id: number) => void
+  onClickDelete: (id: number) => void
 }
 
-export const CharacterList = ({ characters, onClickViewDetail, onClickEdit }: CharacterListProps) => {
+export const CharacterList = ({ characters, onClickViewDetail, onClickEdit, onClickDelete }: CharacterListProps) => {
   return (
     <Stack
       spacing={{ xs: 1, sm: 2 }}
@@ -20,12 +21,10 @@ export const CharacterList = ({ characters, onClickViewDetail, onClickEdit }: Ch
       {
         characters.map((character: Character) => (
           <CharacterComponent
-            id={character.id}
-            image={character.image}
-            name={character.name}
-            species={character.species}
+            {...character}
             onClickDetails={onClickViewDetail}
             onClickEdit={onClickEdit}
+            onClickDelete={onClickDelete}
           />
         ))
       }

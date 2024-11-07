@@ -91,7 +91,16 @@ export const updateCharacter = async (characterId: number, data: Character) => {
   }
 };
 
-const getCleanItem = (item: CharacterItemResponse): Character=>{
+export const deleteCharacter = async (characterId: number) => {
+  try {
+    await apiMiddleware.get<Character>(`${BASE_PATH}/${characterId}`)
+    await apiMiddleware.patch<Character>(`${BASE_PATH}/${characterId}`, { deleted: true, id: characterId.toString() })
+  } catch {
+    await apiMiddleware.post<Character>(`${BASE_PATH}`, { deleted: true, id: characterId.toString() })
+  }
+};
+
+const getCleanItem = (item: CharacterItemResponse): Character => {
   return {
     id: item.id,
     image: item.image,

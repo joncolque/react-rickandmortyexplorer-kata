@@ -8,13 +8,15 @@ import { useGetLocations } from '../../hooks/useGetLocations';
 import { useUpdateCharacter } from '../../hooks/useUpdateCharacter';
 import { ControllerInput, ControllerSelect } from './ControllerInputs';
 import { CharacterCardContainer } from '../containers/CharacterCardContainer';
+import { useDeleteCharacter } from '../../hooks/useDeleteCharacter';
 
 export const CharacterEditor = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const { character, isPending, error } = useGetCharacter(Number(id))
   const { locations } = useGetLocations()
   const { handleUpdate } = useUpdateCharacter(Number(id))
-  const navigate = useNavigate();
+  const { handleDeleteById } = useDeleteCharacter()
   const [toast, setToast] = useState<{ show: boolean, type?: 'success' | 'error' }>({ show: false, type: 'success' });
 
   const { handleSubmit, control, formState: { errors }, reset, watch } = useForm<Character>({
@@ -35,13 +37,20 @@ export const CharacterEditor = () => {
 
   const goBack = () => navigate(-1);
 
-  const handleClose = () => setToast({
-    show: false,
-    type: toast.type
-  })
+  const handleClose = () => setToast({ show: false, type: toast.type })
+
+  const handleDelete = () => {
+    handleDeleteById(Number(id))
+      .then(() => navigate(`/${id}`, { replace: true }))
+      .catch(() => setToast({ show: true, type: 'error' }))
+  }
 
   useEffect(() => {
     if (character) {
+      if (character.deleted === true) {
+        navigate(`/${id}`, { replace: true })
+        return
+      }
       reset(character);
     }
   }, [character, reset]);
@@ -73,15 +82,14 @@ export const CharacterEditor = () => {
                 values={locations}
                 defaultValue={character['location'] ?? ''}
               />}
-              <Button type="submit" variant="contained" color="secondary">
-                Confirm Edit
-              </Button>
+              <Button type="submit" variant="contained" color="info">Confirm Edit</Button>
+              <Button variant="contained" color="warning" onClick={handleDelete}>Delete</Button>
             </Stack>
           </form>
         </CardContent>
       </CharacterCardContainer>
       }
-      <Button onClick={goBack}>Return</Button>
+      <Button onClick={goBack} sx={{ marginY: 1 }}>Return</Button>
       <Snackbar open={toast.show} autoHideDuration={3000} onClose={handleClose} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
         <Alert
           onClose={handleClose}
