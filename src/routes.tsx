@@ -1,9 +1,7 @@
 import { createBrowserRouter } from "react-router-dom"
 import App from "./pages/App";
-import Character from "./components/CharacterComponent";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-
-const queryClient = new QueryClient();
+import { CharacterViewer } from "./components/CharacterViewer";
+import { CharacterEditor } from "./components/edition/CharacterEditor";
 
 export const router = createBrowserRouter([
   {
@@ -12,15 +10,19 @@ export const router = createBrowserRouter([
       {
         path: "",
         element: (
-          <QueryClientProvider client={queryClient}>
-            <App />
-          </QueryClientProvider>
+          <App />
         )
       },
       {
         path: ':id',
         element: (
-          <Character id={''} image={""} name={""} species={""} />
+          <CharacterViewer />
+        )
+      },
+      {
+        path: 'edit/:id',
+        element: (
+          <CharacterEditor />
         )
       }
     ]
