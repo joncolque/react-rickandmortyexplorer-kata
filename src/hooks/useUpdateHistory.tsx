@@ -1,24 +1,24 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { updateCharacter } from "../services/character";
+import { updateHistory } from "../services/character";
 import { Character } from "../interfaces/character";
 
-export const useUpdateCharacter = (id: number) => {
+export const useUpdateHistory = (id: number) => {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: (updatedData: Character) => updateCharacter(id, updatedData),
+    mutationFn: (updatedData: Character) => updateHistory(id, updatedData),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['characters'],
+        queryKey: ['history'],
       });
     },
   });
 
-  const handleUpdate = (characterData: Character) => {
+  const handleUpdateHistory = (characterData: Character) => {
     return mutation.mutateAsync(characterData);
   };
 
   return {
-    handleUpdate,
+    handleUpdateHistory,
   };
 };

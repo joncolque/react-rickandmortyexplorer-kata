@@ -1,7 +1,8 @@
 import { createBrowserRouter } from "react-router-dom"
 import App from "./pages/App";
-import { CharacterViewer } from "./components/CharacterViewer";
+import { CharacterViewerPage } from "./components/CharacterViewerPage";
 import { CharacterEditor } from "./components/edition/CharacterEditor";
+import { CharacterHistoryPage } from "./components/CharacterHistoryPage";
 
 export const router = createBrowserRouter([
   {
@@ -16,13 +17,19 @@ export const router = createBrowserRouter([
       {
         path: ':id',
         element: (
-          <CharacterViewer />
+          <CharacterViewerPage />
         )
       },
       {
         path: 'edit/:id',
         element: (
           <CharacterEditor />
+        )
+      },
+      {
+        path: 'history/:id',
+        element: (
+          <CharacterHistoryPage />
         )
       }
     ]

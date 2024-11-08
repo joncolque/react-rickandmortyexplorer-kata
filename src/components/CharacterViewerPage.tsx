@@ -3,7 +3,7 @@ import { CharacterComponent } from "./CharacterComponent"
 import { useGetCharacter } from "../hooks/useGetCharacter";
 import { Button, Stack } from "@mui/material";
 
-export const CharacterViewer = () => {
+export const CharacterViewerPage = () => {
   const { id } = useParams<{ id: string }>();
   const { character, isPending, error } = useGetCharacter(Number(id))
   const navigate = useNavigate();

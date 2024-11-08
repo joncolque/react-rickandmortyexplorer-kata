@@ -16,7 +16,7 @@ export const CharacterCardContainer = ({ image, children, large = false, deleted
         height: size * 1.5,
         width: size,
         maxWidth: '90vw',
-        maxHeight: '80vh',
+        maxHeight: '90vh',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',

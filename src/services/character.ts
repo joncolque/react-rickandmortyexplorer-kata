@@ -5,6 +5,7 @@ import { PaginatedResponse } from '../interfaces/pagination';
 
 const BASE_PATH = '/character';
 const BASE_PATH_LOCATIONS = '/location';
+const BASE_PATH_HISTORY = '/history';
 
 export const getCharacters = async (page: number, searchQuery: string): Promise<PaginatedResponse<Character[]>> => {
   const [response1, response2] = await Promise.all([
@@ -85,9 +86,9 @@ export const getLocations = async (): Promise<string[]> => {
 export const updateCharacter = async (characterId: number, data: Character) => {
   try {
     await apiMiddleware.get<Character>(`${BASE_PATH}/${characterId}`)
-    await apiMiddleware.put<Character>(`${BASE_PATH}/${characterId}`, { ...data, id: data.id.toString() })
+    await apiMiddleware.patch<Character>(`${BASE_PATH}/${characterId}`, { ...data, id: characterId.toString() })
   } catch {
-    await apiMiddleware.post<Character>(`${BASE_PATH}`, { ...data, id: data.id.toString() })
+    await apiMiddleware.post<Character>(`${BASE_PATH}`, { ...data, id: characterId.toString() })
   }
 };
 
@@ -97,6 +98,25 @@ export const deleteCharacter = async (characterId: number) => {
     await apiMiddleware.patch<Character>(`${BASE_PATH}/${characterId}`, { deleted: true, id: characterId.toString() })
   } catch {
     await apiMiddleware.post<Character>(`${BASE_PATH}`, { deleted: true, id: characterId.toString() })
+  }
+};
+
+export const updateHistory = async (characterId: number, data: Character) => {
+  try {
+    const rta = await apiMiddleware.get<{id:string, history:Character[]}>(`${BASE_PATH_HISTORY}/${characterId}`)
+    const history = [data, ...rta.data.history]
+    await apiMiddleware.patch(`${BASE_PATH_HISTORY}/${characterId}`, { history, id: characterId.toString() })
+  } catch {
+    await apiMiddleware.post(`${BASE_PATH_HISTORY}`, { history:[data], id: characterId.toString() })
+  }
+};
+
+export const getCharacterHistory = async (characterId: number) => {
+  try {
+    const rta = await apiMiddleware.get<{id:string, history:Character[]}>(`${BASE_PATH_HISTORY}/${characterId}`)
+    return rta.data.history
+  } catch {
+    return []
   }
 };
 
@@ -111,3 +131,12 @@ const getCleanItem = (item: CharacterItemResponse): Character => {
     episode: item.episode?.length,
   }
 }
+
+export const getDifferences = (before: any, after: any) => {
+  return Object.keys(after).reduce((diff: any, key) => {
+    if (before[key] !== after[key]) {
+      diff[key] = after[key];
+    }
+    return diff;
+  }, {});
+};

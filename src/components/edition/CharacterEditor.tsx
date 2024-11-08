@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Button, Stack, CardContent, Alert, Snackbar } from '@mui/material';
+import { Button, Stack, CardContent, Alert, Snackbar, Box, Modal, Typography } from '@mui/material';
 import { Character } from '../../interfaces/character';
 import { useGetCharacter } from '../../hooks/useGetCharacter';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -9,6 +9,8 @@ import { useUpdateCharacter } from '../../hooks/useUpdateCharacter';
 import { ControllerInput, ControllerSelect } from './ControllerInputs';
 import { CharacterCardContainer } from '../containers/CharacterCardContainer';
 import { useDeleteCharacter } from '../../hooks/useDeleteCharacter';
+import { getDifferences } from '../../services/character';
+import { useUpdateHistory } from '../../hooks/useUpdateHistory';
 
 export const CharacterEditor = () => {
   const { id } = useParams<{ id: string }>();
@@ -16,6 +18,7 @@ export const CharacterEditor = () => {
   const { character, isPending, error } = useGetCharacter(Number(id))
   const { locations } = useGetLocations()
   const { handleUpdate } = useUpdateCharacter(Number(id))
+  const { handleUpdateHistory } = useUpdateHistory(Number(id))
   const { handleDeleteById } = useDeleteCharacter()
   const [toast, setToast] = useState<{ show: boolean, type?: 'success' | 'error' }>({ show: false, type: 'success' });
 
@@ -24,15 +27,21 @@ export const CharacterEditor = () => {
   });
 
   const onSubmit = (data: Character) => {
-    handleUpdate(data)
-      .then(() => setToast({
-        show: true,
-        type: 'success'
-      }))
-      .catch(() => setToast({
-        show: true,
-        type: 'error'
-      }))
+    const difference = getDifferences(character, data)
+    if (Object.keys(difference).length > 0) {
+      handleUpdate(difference)
+        .then(() => {
+          setToast({
+            show: true,
+            type: 'success'
+          })
+          handleUpdateHistory(difference)
+        })
+        .catch(() => setToast({
+          show: true,
+          type: 'error'
+        }))
+    }
   };
 
   const goBack = () => navigate(-1);
@@ -44,6 +53,8 @@ export const CharacterEditor = () => {
       .then(() => navigate(`/${id}`, { replace: true }))
       .catch(() => setToast({ show: true, type: 'error' }))
   }
+
+  const handleSeeHistory = () => navigate(`/history/${id}`)
 
   useEffect(() => {
     if (character) {
@@ -83,6 +94,7 @@ export const CharacterEditor = () => {
                 defaultValue={character['location'] ?? ''}
               />}
               <Button type="submit" variant="contained" color="info">Confirm Edit</Button>
+              <Button type="submit" variant="contained" color="secondary" onClick={handleSeeHistory}>See history of changes</Button>
               <Button variant="contained" color="warning" onClick={handleDelete}>Delete</Button>
             </Stack>
           </form>
