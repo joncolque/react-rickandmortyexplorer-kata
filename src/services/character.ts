@@ -6,6 +6,7 @@ import { PaginatedResponse } from '../interfaces/pagination';
 const BASE_PATH = '/character';
 const BASE_PATH_LOCATIONS = '/location';
 const BASE_PATH_HISTORY = '/history';
+const BASE_PATH_COMMENTS = '/comment';
 
 export const getCharacters = async (page: number, searchQuery: string): Promise<PaginatedResponse<Character[]>> => {
   const [response1, response2] = await Promise.all([
@@ -103,20 +104,39 @@ export const deleteCharacter = async (characterId: number) => {
 
 export const updateHistory = async (characterId: number, data: Character) => {
   try {
-    const rta = await apiMiddleware.get<{id:string, history:Character[]}>(`${BASE_PATH_HISTORY}/${characterId}`)
+    const rta = await apiMiddleware.get<{ id: string, history: Character[] }>(`${BASE_PATH_HISTORY}/${characterId}`)
     const history = [data, ...rta.data.history]
     await apiMiddleware.patch(`${BASE_PATH_HISTORY}/${characterId}`, { history, id: characterId.toString() })
   } catch {
-    await apiMiddleware.post(`${BASE_PATH_HISTORY}`, { history:[data], id: characterId.toString() })
+    await apiMiddleware.post(`${BASE_PATH_HISTORY}`, { history: [data], id: characterId.toString() })
   }
 };
 
 export const getCharacterHistory = async (characterId: number) => {
   try {
-    const rta = await apiMiddleware.get<{id:string, history:Character[]}>(`${BASE_PATH_HISTORY}/${characterId}`)
+    const rta = await apiMiddleware.get<{ id: string, history: Character[] }>(`${BASE_PATH_HISTORY}/${characterId}`)
     return rta.data.history
   } catch {
     return []
+  }
+};
+
+export const getCharacterComments = async (characterId: number) => {
+  try {
+    const rta = await apiMiddleware.get<{ id: string, comments: { message: string }[] }>(`${BASE_PATH_COMMENTS}/${characterId}`)
+    return rta.data.comments
+  } catch {
+    return []
+  }
+};
+
+export const putCharacterComment = async (characterId: number, data: { message: string }) => {
+  try {
+    const rta = await apiMiddleware.get<{ id: string, comments: { message: string }[] }>(`${BASE_PATH_COMMENTS}/${characterId}`)
+    const comments = [data, ...rta.data.comments]
+    await apiMiddleware.patch(`${BASE_PATH_COMMENTS}/${characterId}`, { comments, id: characterId.toString() })
+  } catch {
+    await apiMiddleware.post(`${BASE_PATH_COMMENTS}`, { comments: [data], id: characterId.toString() })
   }
 };
 
