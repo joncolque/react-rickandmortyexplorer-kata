@@ -1,46 +1,55 @@
 import { useQuery } from "@tanstack/react-query";
 import { getCharacters } from "../services/character";
 import { useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 export const useGetCharacters = () => {
-  const [currentPage, setCurrentPage] = useState<number>(1)
-  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [searchParams] = useSearchParams();
+  const page = searchParams.get("page");
+  const name = searchParams.get("name");
   const [errorMessage, setErrorMessage] = useState<string>('')
   const { isPending, error, data: response } = useQuery({
-    queryKey: ["characters", { page: currentPage, name: searchQuery }],
-    queryFn: () => getCharacters(currentPage, searchQuery),
-    staleTime: 1000 * 60 * 1
+    queryKey: ["characters", { page, name }],
+    queryFn: () => getCharacters(Number(page), name ?? ''),
+    staleTime: 1000 * 60 * 1,
   })
+  const navigate = useNavigate();
 
   const handleNext = () => {
     if (response?.info.next) {
-      setCurrentPage((prevPage) => prevPage + 1);
+      const path = response?.info.next.split('?')[1]
+      navigate(`/?${path}`);
     }
   };
 
   const handlePrev = () => {
     if (response?.info.prev) {
-      setCurrentPage((prevPage) => prevPage - 1);
+      const path = response?.info.prev.split('?')[1]
+      navigate(`/?${path}`);
     }
   };
 
   const handleSearch = (value: string) => {
-    setCurrentPage(1)
-    setSearchQuery(value)
+    navigate(`/?page=${1}&name=${value}`);
   };
 
   useEffect(() => {
-    setErrorMessage(error ? 'No results found' : '')
+    if (error && error.message) {
+      setErrorMessage(error?.message)
+    } else {
+      setErrorMessage('')
+    }
   }, [error])
 
   return {
-    currentPage,
+    currentPage: Boolean(page) ? Number(page) : 1,
     pages: response?.info.pages,
     handlePrev,
     handleNext,
     errorMessage,
     characters: response?.results ?? [],
     handleSearch,
-    isPending
+    isPending,
+    searchQuery: name
   }
 };

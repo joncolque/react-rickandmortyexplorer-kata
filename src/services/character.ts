@@ -2,6 +2,8 @@ import api from '../config/api';
 import apiMiddleware from '../config/apiMiddleware';
 import { Character, CharacterItemResponse } from '../interfaces/character';
 import { PaginatedResponse } from '../interfaces/pagination';
+import { texts } from '../texts';
+import { getCleanItem } from './common';
 
 const BASE_PATH = '/character';
 const BASE_PATH_LOCATIONS = '/location';
@@ -9,31 +11,35 @@ const BASE_PATH_HISTORY = '/history';
 const BASE_PATH_COMMENTS = '/comment';
 
 export const getCharacters = async (page: number, searchQuery: string): Promise<PaginatedResponse<Character[]>> => {
-  const [response1, response2] = await Promise.all([
-    api.get<PaginatedResponse<CharacterItemResponse[]>>(`${BASE_PATH}?page=${page}&name=${searchQuery}`),
-    apiMiddleware.get<Character[]>(`${BASE_PATH}`)
-  ]);
+  try {
+    const [response1, response2] = await Promise.all([
+      api.get<PaginatedResponse<CharacterItemResponse[]>>(`${BASE_PATH}?page=${page}&name=${searchQuery}`),
+      apiMiddleware.get<Character[]>(`${BASE_PATH}`).catch(() => null)
+    ]);
 
-  const combinedData: PaginatedResponse<Character[]> = {
-    ...response1.data,
-    results: response1.data.results.map((item) => {
-      const matchingItem = response2.data.find(
-        (result) => result.id == item.id
-      );
+    const combinedData: PaginatedResponse<Character[]> = {
+      ...response1.data,
+      results: response1.data.results.map((item) => {
+        const matchingItem = response2?.data.find(
+          (result) => result.id == item.id
+        );
 
-      const characterCleaned = getCleanItem(item)
-      if (matchingItem) {
-        return {
-          ...characterCleaned,
-          ...matchingItem,
-        };
-      }
+        const characterCleaned = getCleanItem(item)
+        if (matchingItem) {
+          return {
+            ...characterCleaned,
+            ...matchingItem,
+          };
+        }
 
-      return characterCleaned
-    })
-  };
+        return characterCleaned
+      })
+    };
 
-  return combinedData;
+    return combinedData;
+  } catch (error: any) {
+    throw new Error(error?.response?.data.error ?? texts.tryAgainExtended);
+  }
 }
 
 export const getCharacter = async (id: number): Promise<Character> => {
@@ -138,25 +144,4 @@ export const putCharacterComment = async (characterId: number, data: { message: 
   } catch {
     await apiMiddleware.post(`${BASE_PATH_COMMENTS}`, { comments: [data], id: characterId.toString() })
   }
-};
-
-const getCleanItem = (item: CharacterItemResponse): Character => {
-  return {
-    id: item.id,
-    image: item.image,
-    name: item.name,
-    species: item.species,
-    status: item.status,
-    location: item.location?.name,
-    episode: item.episode?.length,
-  }
-}
-
-export const getDifferences = (before: any, after: any) => {
-  return Object.keys(after).reduce((diff: any, key) => {
-    if (before[key] !== after[key]) {
-      diff[key] = after[key];
-    }
-    return diff;
-  }, {});
 };

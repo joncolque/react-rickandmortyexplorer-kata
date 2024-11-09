@@ -12,15 +12,15 @@ export const CommentInput = ({ onSend, disabled = false }: CommentInputProps) =>
   const [message, setMessage] = useState<string>('')
 
   const handleSend = () => {
-    onSend(message)
-    setMessage('')
+    if (Boolean(message)) {
+      onSend(message)
+      setMessage('')
+    }
   }
 
   const handleKeyPress = (event: React.KeyboardEvent) => {
     if (event.key === 'Enter') {
-      onSend(message)
-      setMessage('');
-      event.preventDefault();
+      handleSend()
     }
   };
 

@@ -1,46 +1,59 @@
-# Getting Started with Create React App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## DEV
 
-## Available Scripts
-
-In the project directory, you can run:
-
-### `npm start`
+### `npm start`: Uses the URLs specified in the `.env` file.
+### `npm run server` Run this command in a separate terminal to start the simulated backend.
 
 Runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+# STRATEGIES
 
-### `npm test`
+### Api middleware
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+This middleware manages data through the following flow:
 
-### `npm run build`
+![My Image Description](./readme-files/middleware.JPG)
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- GET: Handles requests for character lists and individual characters.
+- PUT: Used for updates, tracking history changes, deletions, and managing comments.
+- json-server:
+  - Contains three collections: character (for updates and deletions), history (for change tracking), and comment.
+  - character and history collections store partial data to avoid redundancy.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Site Reliability
+In case `json-server` is unavailable:
+- The Characters page takes info from rickandmortyapi.com
+- An error 'Please, try again later.' will is display when attempting to modify data (character editing, deletion and comments)
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+In case `rickandmortyapi.com` is unavailable:
+- For a new search query, the Characters page will display 'We are working to enhance our services. Please try again later.'
+- For a cached search query, the Characters page will show cached data, managed by `useQuery`.
+- Character editing, deletion, and comments functionality will remain operational because `json-server` is running, and any changes will reflect on the Characters page using cached data through `useQuery`.
 
-### `npm run eject`
+### Routes
+- Searching by browser path or by typing in the searchinput is supported.
+- All pages are accessible via browser path.
+- The `Edit and History pages` cannot be accessed via browser path if the character has been deleted.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+### Extensibility
+- History Timestamp: Timestamps can be added to history entries to show the relative time, e.g., "1 day ago." The structure updates from `{keyModified:"value modified"}` to `{keyModified:"value modified", timestamp:21341234444}`
+- Comment Timestamp and User: Timestamps and user information can be added to comments in a similar structure to the history entries, such as `{message:"This is a message", timestamp:21341234444, user:"random user"}`
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Possible Improvements and Knowed issues
+- Global Toaster Notification (Improvement): Adding a global toaster notification system to display alerts or messages across the application.
+- Debounce for Search Input (Improvement): Implementing debounce functionality for the search input to reduce the number of API calls and improve performance.
+- Character Name Modification (Known Issue): Modifying a character's name works as expected, but the modified name is not searchable due to the R&M API’s lack of awareness of the updated name.
+- Optimize Bundle Size (Improvement): Replace named imports with default imports in Material UI components, as recommended https://mui.com/material-ui/guides/minimizing-bundle-size/
+- File and Folder Organization and Names (Known Issue)
+Reorganize files and folders to improve project structure and maintainability.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+## BUILD
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+### `npm run build` uses URLs from .env.production
+### `npm install -g serve`
+### `serve -s build`  serves the static files
+### `npm run server` in a separate terminal, to launch the simulated backend.
 
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+Runs the app serving static files.\
+![My Image Description](./readme-files/serve.JPG)

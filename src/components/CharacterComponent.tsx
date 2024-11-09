@@ -40,11 +40,11 @@ export const CharacterComponent = (props: CharacterComponentProps) => {
       <CardActions>
         <Box justifyContent={'space-between'} flexDirection={'row'} display={'flex'} width={'100%'} alignItems={'center'}>
           <Box>
-            {onClickEdit && !deleted && id && <IconButton size="small" onClick={() => onClickEdit(id)}>
-              <EditIcon />
-            </IconButton>}
             {onClickDetails && id && <IconButton size="small" onClick={() => onClickDetails(id)}>
               <EyeIcon />
+            </IconButton>}
+            {onClickEdit && !deleted && id && <IconButton size="small" onClick={() => onClickEdit(id)}>
+              <EditIcon />
             </IconButton>}
           </Box>
           <Box>

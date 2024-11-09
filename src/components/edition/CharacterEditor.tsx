@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Button, Stack, CardContent, Alert, Snackbar, Box, Modal, Typography } from '@mui/material';
+import { Button, Stack, CardContent } from '@mui/material';
 import { Character } from '../../interfaces/character';
 import { useGetCharacter } from '../../hooks/useGetCharacter';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -9,8 +9,11 @@ import { useUpdateCharacter } from '../../hooks/useUpdateCharacter';
 import { ControllerInput, ControllerSelect } from './ControllerInputs';
 import { CharacterCardContainer } from '../containers/CharacterCardContainer';
 import { useDeleteCharacter } from '../../hooks/useDeleteCharacter';
-import { getDifferences } from '../../services/character';
 import { useUpdateHistory } from '../../hooks/useUpdateHistory';
+import { ToasterAutoHide } from '../common/ToasterAutoHide';
+import { texts } from '../../texts';
+import { Loader } from '../common/Loader.';
+import { getDifferences } from '../../services/common';
 
 export const CharacterEditor = () => {
   const { id } = useParams<{ id: string }>();
@@ -20,7 +23,7 @@ export const CharacterEditor = () => {
   const { handleUpdate } = useUpdateCharacter(Number(id))
   const { handleUpdateHistory } = useUpdateHistory(Number(id))
   const { handleDeleteById } = useDeleteCharacter()
-  const [toast, setToast] = useState<{ show: boolean, type?: 'success' | 'error' }>({ show: false, type: 'success' });
+  const [toast, setToast] = useState<{ show: boolean, type: 'success' | 'error' }>({ show: false, type: 'success' });
 
   const { handleSubmit, control, formState: { errors }, reset, watch } = useForm<Character>({
     defaultValues: character,
@@ -74,7 +77,7 @@ export const CharacterEditor = () => {
       alignItems="center"
       height={'100vh'}
     >
-      {isPending && <>Loading...</>}
+      {isPending && !error && <Loader/>}
       {error && <>Please try again later</>}
       {character && <CharacterCardContainer large image={imageUrl || character.image}>
         <CardContent>
@@ -101,17 +104,13 @@ export const CharacterEditor = () => {
         </CardContent>
       </CharacterCardContainer>
       }
-      <Button onClick={goBack} sx={{ marginY: 1 }}>Return</Button>
-      <Snackbar open={toast.show} autoHideDuration={3000} onClose={handleClose} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
-        <Alert
-          onClose={handleClose}
-          severity={toast.type}
-          variant="filled"
-          sx={{ width: '100%' }}
-        >
-          {toast.type === 'error' ? 'Try again Later' : 'Saved'}
-        </Alert>
-      </Snackbar>
+      <Button onClick={goBack} sx={{ marginY: 1 }}>{texts.goBack}</Button>
+      <ToasterAutoHide
+        show={toast.show}
+        handleClose={handleClose}
+        type={toast.type}
+        text={toast.type === 'error' ? texts.tryAgain : 'Saved!'}
+      />
     </Stack>
   );
 };

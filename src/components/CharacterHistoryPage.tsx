@@ -3,10 +3,13 @@ import { useGetCharacter } from "../hooks/useGetCharacter";
 import { Box, Button, Card, Stack, Typography } from "@mui/material";
 import { useGetCharacterHistory } from "../hooks/useGetCharacterHistory";
 import { useEffect } from "react";
+import { texts } from "../texts";
+import { Loader } from "./common/Loader.";
+import { NoContent } from "./common/NoContent";
 
 export const CharacterHistoryPage = () => {
   const { id } = useParams<{ id: string }>();
-  const { history } = useGetCharacterHistory(Number(id))
+  const { history, isPending, error } = useGetCharacterHistory(Number(id))
   const navigate = useNavigate();
   const { character } = useGetCharacter(Number(id))
 
@@ -25,8 +28,9 @@ export const CharacterHistoryPage = () => {
       gap={1}
       alignItems={'center'}
     >
-      <Typography variant="h4" textAlign={'center'}>Ordered by most recently</Typography>
+      {history && history.length > 0 && <Typography variant="h5" textAlign={'center'}>Ordered by most recently</Typography>}
       <Box sx={{ width: '80vw', maxHeight: '80vh', overflowY: 'auto', padding: 1 }}>
+        {isPending && !error && <Loader />}
         {history?.map(element => (
           <Card sx={{ padding: 1, marginBottom: 1 }}>
             <Typography>
@@ -39,8 +43,9 @@ export const CharacterHistoryPage = () => {
             </Typography>
           </Card>
         ))}
+        {history?.length === 0 && <NoContent message={'There is no modifications yet'} />}
       </Box>
-      <Button onClick={goBack}>Return</Button>
+      <Button onClick={goBack}>{texts.goBack}</Button>
     </Stack>
   )
 }

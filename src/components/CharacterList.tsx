@@ -22,6 +22,7 @@ export const CharacterList = ({ characters, onClickViewDetail, onClickEdit, onCl
         characters.map((character: Character) => (
           <CharacterComponent
             {...character}
+            key={character.id}
             onClickDetails={onClickViewDetail}
             onClickEdit={onClickEdit}
             onClickDelete={onClickDelete}
