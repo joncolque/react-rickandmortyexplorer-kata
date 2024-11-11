@@ -1,3 +1,15 @@
+## Project's purpose
+
+This project implements features for a Single Page Application (SPA) using TypeScript. The goal is to simulate production-ready conditions, prioritizing functionality, performance, and usability.
+
+Using the Rick and Morty API, along with json-server for local data persistence, the project includes the following key features:
+
+- UI: The app utilizes MUI for consistent styling and improved accessibility, along with react-hook-form for form handling and react-query for data fetching.
+- Editing and Deleting Characters: Users can modify character attributes, which are reflected both in the character list and detail views. Deleted characters remain in the list, labeled as deleted, and cannot be edited or commented on.
+- Modification History: Each character’s complete modification history is available, except for deleted characters.
+- Comments: Users can add and view comments on character details, enhancing user interaction (excluding deleted characters).
+
+The project provides a flexible and robust SPA with a focus on usability, showcasing API integration, client-side data management, and user interactions.
 
 ## DEV
 
