@@ -53,7 +53,7 @@ export const CharacterEditor = () => {
 
   const handleDelete = () => {
     handleDeleteById(Number(id))
-      .then(() => navigate(`/${id}`, { replace: true }))
+      .then(() => navigate(-1))
       .catch(() => setToast({ show: true, type: 'error' }))
   }
 
