@@ -21,7 +21,7 @@ export const getCharacters = async (page: number, searchQuery: string): Promise<
       ...response1.data,
       results: response1.data.results.map((item) => {
         const matchingItem = response2?.data.find(
-          (result) => result.id === item.id
+          (result) => Number(result.id) === item.id
         );
 
         const characterCleaned = getCleanItem(item)

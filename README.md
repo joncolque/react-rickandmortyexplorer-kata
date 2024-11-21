@@ -68,4 +68,14 @@ Reorganize files and folders to improve project structure and maintainability.
 ### `npm run server` in a separate terminal, to launch the simulated backend.
 
 Runs the app serving static files.\
-![My Image Description](./readme-files/serve.JPG)
+![server](./readme-files/serve.JPG)
+
+## Screenshots of the project
+### Home
+![home](./readme-files/RM_home.JPG)
+
+### Character detail
+![detail](./readme-files/RM_detail.JPG)
+
+### Character edition
+![edition](./readme-files/RM_edit.JPG)
